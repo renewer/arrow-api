@@ -11,3 +11,9 @@ onListen = (err) ->
     setTimeout(apiserver.close(onClose), 5000)
 
 onClose = () -> console.log('port unbound correctly')
+
+arrowModule =
+  get: (request, response) ->
+    response.serveJSON({ foo: 'bar' })
+
+apiserver.addModule('1', 'arrow', arrowModule)
