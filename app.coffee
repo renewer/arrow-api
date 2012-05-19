@@ -1,4 +1,10 @@
 ApiServer = require 'apiserver'
+request = require 'request'
+
+config =
+  foursquare:
+    apiurl: "https://api.foursquare.com/v2/"
+    token: "JYBSAF3BGP33BECMOQJAPTYCHFNS0MDSQS5Y3KPWLU5FGKSD"
 
 apiserver = new ApiServer()
 apiserver.listen(3000, onListen)
@@ -13,7 +19,12 @@ onListen = (err) ->
 onClose = () -> console.log('port unbound correctly')
 
 arrowModule =
-  get: (request, response) ->
-    response.serveJSON({ foo: 'bar' })
+  get: (req, resp) ->
+    console.log req
+    apiquery = config.foursquare.apiurl + 'venues/trending?ll=' +
+      req.querystring.lat + ',' + req.querystring.lng +
+      '&radius=500&limit=10&oauth_token=' + config.foursquare.token + '&v=20120519'
+    request(apiquery, (error, response, body) ->
+      resp.serveJSON(JSON.parse body))
 
 apiserver.addModule('1', 'arrow', arrowModule)

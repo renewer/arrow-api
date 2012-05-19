@@ -13,7 +13,8 @@
   },
   "dependencies": {
     "apiserver": "0.2.x",
-    "coffee-script": ">= 1.3.0"
+    "coffee-script": ">= 1.3.0",
+    "request": ">= 2.9.0"
   },
   "devDependencies": {}
 }
