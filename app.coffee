@@ -1,6 +1,9 @@
 ApiServer = require 'apiserver'
 request = require 'request'
 
+Number.prototype.toDeg = () ->
+  this * 180 / Math.PI;
+
 config =
   foursquare:
     apiurl: "https://api.foursquare.com/v2/"
@@ -41,16 +44,30 @@ computeCenter = (data) ->
   console.log wlat, wlng, wcount
   {lat: wlat/wcount, lng: wlng/wcount}
 
+# http://www.movable-type.co.uk/scripts/latlong.html
+computeBearing = (ll1, ll2) ->
+  console.log ll1
+  console.log ll2
+  dLon = ll2.lng - ll1.lng
+  lat1 = ll1.lat
+  lat2 = ll2.lat
+  console.log dLon, lat1, lat2
+  y = Math.sin(dLon) * Math.cos(lat2)
+  x = Math.cos(lat1) * Math.sin(lat2) -
+    Math.sin(lat1)*Math.cos(lat2)*Math.cos(dLon)
+  Math.atan2(y, x).toDeg()
+
 arrowModule =
   get: (req, resp) ->
     #console.log req
-    lat = req.querystring.lat || config.location.lat
-    lng = req.querystring.lng || config.location.lng
+    ll =
+      lat: req.querystring.lat || config.location.lat
+      lng: req.querystring.lng || config.location.lng
     radius = req.querystring.radius || config.radius
     limit = req.querystring.limit || config.limit
-    apiquery = config.foursquare.apiurl + 'venues/trending?ll=' + lat + ',' + lng +
+    apiquery = config.foursquare.apiurl + 'venues/trending?ll=' + ll.lat + ',' + ll.lng +
       '&radius=' + radius + '&limit=' + limit + '&oauth_token=' + config.foursquare.token + '&v=20120519'
-    request(apiquery, (error, response, body) ->
-      resp.serveJSON(computeCenter parseApiResp JSON.parse body))
+    request apiquery, (error, response, body) ->
+      resp.serveJSON computeBearing ll, computeCenter parseApiResp JSON.parse body
 
 apiserver.addModule('1', 'arrow', arrowModule)
