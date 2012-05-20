@@ -2,9 +2,6 @@ ApiServer = require 'apiserver'
 request = require 'request'
 where = require 'where'
 
-Number.prototype.toDeg = () ->
-  this * 180 / Math.PI;
-
 config =
   foursquare:
     apiurl: "https://api.foursquare.com/v2/"
