@@ -11,9 +11,12 @@ config =
     lng: -0.10929599404335
   radius: 1000
   limit: 10
+  port: 3000
 
 apiserver = new ApiServer()
-apiserver.listen(3000, onListen)
+port = process.env.PORT || config.port
+apiserver.listen port, onListen
+console.log "API server listening on port %d in %s mode", port, process.env.NODE_ENV
 
 onListen = (err) ->
   if err
